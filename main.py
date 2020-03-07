@@ -13,13 +13,9 @@ size = (700, 500)
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Pong")
 
-paddleA = Paddle(WHITE, 10, 100)
-paddleA.rect.x = 20
-paddleA.rect.y = 200
-
-paddleB = Paddle(WHITE, 10, 100)
-paddleB.rect.x = 670
-paddleB.rect.y = 200
+paddleA = Paddle(WHITE, 100, 10)
+paddleA.rect.x = 350
+paddleA.rect.y = 450
 
 ball = Ball(WHITE, 10, 10)
 ball.rect.x = 345
@@ -28,7 +24,6 @@ ball.rect.y = 195
 all_sprites_list = pygame.sprite.Group()
 
 all_sprites_list.add(paddleA)
-all_sprites_list.add(paddleB)
 all_sprites_list.add(ball)
 
 carryOn = True
@@ -47,29 +42,33 @@ while carryOn:
                 carryOn = False
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        paddleA.moveUp(5)
-    if keys[pygame.K_s]:
-        paddleA.moveDown(5)
-    if keys[pygame.K_UP]:
-        paddleB.moveUp(5)
-    if keys[pygame.K_DOWN]:
-        paddleB.moveDown(5)
+    if keys[pygame.K_LEFT]:
+        paddleA.move_left(5)
+    if keys[pygame.K_RIGHT]:
+        paddleA.move_right(5)
 
     all_sprites_list.update()
 
+    # if ball touch right wall
     if ball.rect.x >= 690:
-        scoreA += 1
         ball.velocity[0] = -ball.velocity[0]
+
+    # if ball touch left wall
     if ball.rect.x <= 0:
-        scoreB += 1
         ball.velocity[0] = -ball.velocity[0]
+    
+    # if ball touch bottom wall
     if ball.rect.y > 490:
+        if scoreA != 0:
+            scoreA -= 1
         ball.velocity[1] = -ball.velocity[1]
+    
+    # if ball touch top wall
     if ball.rect.y < 0:
+        scoreA += 1
         ball.velocity[1] = -ball.velocity[1]
 
-    if pygame.sprite.collide_mask(ball, paddleA) or pygame.sprite.collide_mask(ball, paddleB):
+    if pygame.sprite.collide_mask(ball, paddleA):
         ball.bounce()
 
     screen.fill(BLACK)
@@ -79,9 +78,7 @@ while carryOn:
     # display scores:
     font = pygame.font.Font(None, 74)
     text = font.render(str(scoreA), 1, WHITE)
-    screen.blit(text, (250, 10))
-    text = font.render(str(scoreB), 1, WHITE)
-    screen.blit(text, (420, 10))
+    screen.blit(text, (350, 10))
 
     pygame.display.flip()
 
